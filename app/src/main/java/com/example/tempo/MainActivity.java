@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void StopTime(View view) {
-        wasRunning = false;
+        running = false;
     }
 
     public void RestartTime(View view) {
@@ -91,5 +91,4 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
 }
