@@ -15,6 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="00:00:00"
+            android:textColor="@color/white"
             android:textSize="60sp"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="200dp"/>
@@ -27,6 +28,7 @@
             android:layout_margin="72dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentBottom="true"
+            android:backgroundTint="@color/red"
             android:onClick="StopTime"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -37,6 +39,7 @@
             android:layout_margin="72dp"
             android:layout_centerInParent="true"
             android:layout_alignParentBottom="true"
+            android:backgroundTint="@color/red"
             android:onClick="StartTime"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -44,7 +47,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/baseline_refresh_24"
+
             android:layout_margin="74dp"
+            android:backgroundTint="@color/red"
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             android:onClick="RestartTime"/>

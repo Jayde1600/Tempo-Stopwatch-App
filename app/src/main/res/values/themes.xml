@@ -2,7 +2,9 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.Tempo" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="colorPrimary">@color/red</item>
+        <item name="android:colorSecondary">@color/red</item>
     </style>
 
     <style name="Theme.Tempo" parent="Base.Theme.Tempo" />
