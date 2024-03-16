@@ -13,16 +13,13 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class StopwatchFragment extends Fragment implements View.OnClickListener {
+public class StopwatchFragment extends Fragment {
     private TextView timerTextView;
-
-    /*private static final int START_BUTTON_ID = 1;
-    private static final int STOP_BUTTON_ID = 2;
-    private static final int RESET_BUTTON_ID = 3;*/
     private FloatingActionButton startButton, stopButton, resetButton;
     private long startTime = 0L;
     private Handler handler = new Handler();
     private long millisecondTime, timeSwapBuff, updateTime = 0L;
+    private boolean isTimerRunning = false;
 
     @Nullable
     @Override
@@ -30,36 +27,61 @@ public class StopwatchFragment extends Fragment implements View.OnClickListener 
         View view = inflater.inflate(R.layout.fragment_stopwatch, container, false);
         timerTextView = view.findViewById(R.id.TimeKeep);
 
-        startButton = (FloatingActionButton) view.findViewById(R.id.start);
-        stopButton = (FloatingActionButton) view.findViewById(R.id.Stop);
-        resetButton = (FloatingActionButton) view.findViewById(R.id.Restart);
+        startButton = view.findViewById(R.id.StartWatch);
+        stopButton = view.findViewById(R.id.StoppedWatch);
+        resetButton = view.findViewById(R.id.RestartWatch);
 
-        startButton.setOnClickListener(this);
-        stopButton.setOnClickListener(this);
-        resetButton.setOnClickListener(this);
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onStartButtonClick();
+            }
+        });
+
+        stopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onStopButtonClick();
+            }
+        });
+
+        resetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onResetButtonClick();
+            }
+        });
 
         return view;
     }
 
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.start) {
+    private void onStartButtonClick() {
+        if (!isTimerRunning) {
             startTime = System.currentTimeMillis();
             handler.postDelayed(runnable, 0);
-        } else if (v.getId() == R.id.Stop) {
-            timeSwapBuff += millisecondTime;
-            handler.removeCallbacks(runnable);
-        } else if (v.getId() == R.id.Restart) {
-            handler.removeCallbacks(runnable);
-            millisecondTime = 0L;
-            timeSwapBuff = 0L;
-            startTime = 0L;
-            updateTime = 0L;
-            timerTextView.setText("00:00:00");
+            isTimerRunning = true;
         }
     }
 
-    public Runnable runnable = new Runnable() {
+    private void onStopButtonClick() {
+        if (isTimerRunning) {
+            timeSwapBuff += millisecondTime;
+            handler.removeCallbacks(runnable);
+            isTimerRunning = false;
+        }
+    }
+
+    private void onResetButtonClick() {
+        handler.removeCallbacks(runnable);
+        millisecondTime = 0L;
+        timeSwapBuff = 0L;
+        startTime = 0L;
+        updateTime = 0L;
+        timerTextView.setText("00:00:00");
+        isTimerRunning = false;
+    }
+
+    private Runnable runnable = new Runnable() {
         public void run() {
             millisecondTime = System.currentTimeMillis() - startTime;
             updateTime = timeSwapBuff + millisecondTime;
@@ -67,9 +89,7 @@ public class StopwatchFragment extends Fragment implements View.OnClickListener 
             int minutes = seconds / 60;
             seconds = seconds % 60;
             int milliseconds = (int) (updateTime % 1000);
-            timerTextView.setText("" + String.format("%02d", minutes) + ":"
-                    + String.format("%02d", seconds) + ":"
-                    + String.format("%03d", milliseconds));
+            timerTextView.setText(String.format("%02d:%02d:%03d", minutes, seconds, milliseconds));
             handler.postDelayed(this, 0);
         }
     };
