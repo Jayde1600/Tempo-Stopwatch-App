@@ -1,0 +1,12 @@
+<!-- res/menu/bottom_navigation_menu.xml -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_stop"
+        android:title="Stopwatch"
+        android:icon="@drawable/baseline_speed_24" /> <!-- Set appropriate icon for Stopwatch -->
+
+    <item
+        android:id="@+id/nav_time"
+        android:title="Timer"
+        android:icon="@drawable/baseline_timer_24" /> <!-- Set appropriate icon for Timer -->
+</menu>

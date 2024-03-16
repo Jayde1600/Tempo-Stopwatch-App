@@ -1,94 +1,49 @@
 package com.example.tempo;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.MenuItem;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.view.View;
-import android.widget.TextView;
-
-import java.util.Locale;
+import androidx.annotation.NonNull;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 public class MainActivity extends AppCompatActivity {
 
-    private int seconds;
-    private boolean running;
-    private boolean wasRunning;
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(savedInstanceState != null) {
-            savedInstanceState.getInt("seconds");
-            savedInstanceState.getBoolean("running");
-            savedInstanceState.getBoolean("wasRunning");
-        }
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnItemSelectedListener(navListener);
 
-        runTimer();
+        // Load initial fragment
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                new StopwatchFragment()).commit();
     }
 
-    public void StartTime(View view) {
-        running = true;
-    }
+    private BottomNavigationView.OnItemSelectedListener navListener =
+            new BottomNavigationView.OnItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    Fragment selectedFragment = null;
 
-    public void StopTime(View view) {
-        running = false;
-    }
+                    if (item.getItemId() == R.id.nav_stop) {
+                        selectedFragment = new StopwatchFragment();
+                    } else if (item.getItemId() == R.id.nav_time) {
+                        selectedFragment = new TimerFragment();
+                    }
 
-    public void RestartTime(View view) {
-        running = false;
-        seconds = 0;
-    }
+                    // Begin transaction to replace fragment
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, selectedFragment)
+                            .commit();
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        wasRunning = running;
-        running = false;
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if(wasRunning) {
-            running = true;
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putInt("seconds", seconds);
-        outState.putBoolean("running", running);
-        outState.putBoolean("wasRunning", wasRunning);
-    }
-
-    private void runTimer() {
-        TextView timeView = findViewById(R.id.TimeKeep);
-        Handler handler = new Handler();
-
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                int hours = seconds / 3600;
-                int minutes = (seconds % 3600) / 60;
-                int secs = seconds % 60;
-
-                String time = String.format(Locale.getDefault(),
-                        "%02d:%02d:%02d",
-                        hours, minutes, secs);
-
-                timeView.setText(time);
-
-                if(running) {
-                    seconds++;
+                    return true;
                 }
-                handler.postDelayed(this,1000);
-            }
-        });
-    }
+            };
 }

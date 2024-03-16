@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:id="@+id/Timer">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/text_view_countdown"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:textSize="48sp"
+            android:text="00:00:00"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/button_start_pause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/button_reset"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="72dp"
+            android:layout_marginEnd="72dp"
+            android:layout_marginStart="72dp"
+            android:backgroundTint="@color/white"
+            android:onClick="StartTimer"
+            android:padding="10dp"
+            android:text="Start"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/button_reset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:text="Reset"
+            android:textSize="18sp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="42dp"
+            android:layout_marginStart="72dp"
+            android:layout_marginEnd="72dp"
+            android:padding="8dp"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/red"
+            android:visibility="invisible" />
+
+    </RelativeLayout>
+
+</RelativeLayout>
