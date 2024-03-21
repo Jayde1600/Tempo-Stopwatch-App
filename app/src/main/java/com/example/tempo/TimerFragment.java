@@ -1,12 +1,16 @@
 package com.example.tempo;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,7 +20,7 @@ import java.util.Locale;
 
 public class TimerFragment extends Fragment {
 
-    private TextView textViewCountdown;
+    private EditText editTextCountdown;
     private Button buttonStartPause;
     private Button buttonReset;
 
@@ -26,14 +30,33 @@ public class TimerFragment extends Fragment {
     private long timeLeftInMillis;
     private long endTime;
 
+    private MediaPlayer mediaPlayer;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_timer, container, false);
 
-        textViewCountdown = view.findViewById(R.id.text_view_countdown);
+        editTextCountdown = view.findViewById(R.id.edit_text_countdown);
         buttonStartPause = view.findViewById(R.id.button_start_pause);
         buttonReset = view.findViewById(R.id.button_reset);
+
+        editTextCountdown.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // No implementation needed
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // No implementation needed
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // No implementation needed
+            }
+        });
 
         buttonStartPause.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,9 +80,32 @@ public class TimerFragment extends Fragment {
     }
 
     private void startTimer() {
-        endTime = System.currentTimeMillis() + timeLeftInMillis;
+        String input = editTextCountdown.getText().toString().trim();
 
-        countDownTimer = new CountDownTimer(timeLeftInMillis, 1000) {
+        // Split the input into hours, minutes, and seconds
+        String[] timeComponents = input.split(":");
+        if (timeComponents.length != 3) {
+            // Handle invalid input
+            Toast.makeText(getActivity(), "Please enter time in HH:MM:SS format", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int hours = Integer.parseInt(timeComponents[0]);
+        int minutes = Integer.parseInt(timeComponents[1]);
+        int seconds = Integer.parseInt(timeComponents[2]);
+
+        // Calculate total milliseconds
+        long totalTimeInMillis = ((hours * 60 + minutes) * 60 + seconds) * 1000;
+
+        if (totalTimeInMillis <= 0) {
+            Toast.makeText(getActivity(), "Please enter a valid time", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        startTimeInMillis = totalTimeInMillis;
+        resetTimer();
+
+        countDownTimer = new CountDownTimer(startTimeInMillis, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 timeLeftInMillis = millisUntilFinished;
@@ -70,6 +116,7 @@ public class TimerFragment extends Fragment {
             public void onFinish() {
                 timerRunning = false;
                 updateButtons();
+                playAlarm();
             }
         }.start();
 
@@ -87,6 +134,17 @@ public class TimerFragment extends Fragment {
         timeLeftInMillis = startTimeInMillis;
         updateCountdownText();
         updateButtons();
+
+        // Stop the alarm sound if it's playing
+        stopAlarm();
+    }
+
+    private void stopAlarm() {
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
     }
 
     private void updateCountdownText() {
@@ -95,7 +153,7 @@ public class TimerFragment extends Fragment {
         int seconds = (int) (timeLeftInMillis / 1000) % 60;
 
         String timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds);
-        textViewCountdown.setText(timeLeftFormatted);
+        editTextCountdown.setText(timeLeftFormatted);
     }
 
     private void updateButtons() {
@@ -103,24 +161,26 @@ public class TimerFragment extends Fragment {
             buttonStartPause.setText("Pause");
             buttonReset.setVisibility(View.INVISIBLE);
         } else {
-            buttonReset.setVisibility(View.VISIBLE);
-
+            buttonStartPause.setText("Start");
             if (timeLeftInMillis < 1000) {
                 buttonStartPause.setVisibility(View.INVISIBLE);
             } else {
                 buttonStartPause.setVisibility(View.VISIBLE);
             }
+
+            if (timeLeftInMillis < startTimeInMillis) {
+                buttonReset.setVisibility(View.VISIBLE);
+            } else {
+                buttonReset.setVisibility(View.INVISIBLE);
+            }
         }
     }
 
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        startTimeInMillis = 600000; // 10 minutes in milliseconds
-        timeLeftInMillis = startTimeInMillis;
-        updateCountdownText();
-        updateButtons();
+    private void playAlarm() {
+        // Play your alarm sound here
+        // For example:
+        mediaPlayer = MediaPlayer.create(getActivity(), R.raw.digital_timer);
+        mediaPlayer.start();
     }
 
     @Override
@@ -128,6 +188,9 @@ public class TimerFragment extends Fragment {
         super.onStop();
         if (countDownTimer != null) {
             countDownTimer.cancel();
+        }
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
         }
     }
 }
